@@ -13,10 +13,40 @@ function pruebas(req, res) {
     })
 }
 
+function getUsers(req, res) {
+
+    if(req.params.page) {
+        var page = req.params.page;
+    }else{
+        var page = 1;
+    }
+    
+    var itemsPerPage = 3;
+
+    User.find().sort('nombre').paginate(page, itemsPerPage, (err, users, total) => {
+        if(err) {
+            res.status(500).send( { message: 'Error en la peticion' });   
+        }else{
+            if(!users) {
+                res.status(404).send( { message: 'No hay usuarios' });   
+            }else{
+                return res.status(200).send( { 
+                    total_items: total,
+                    users: users 
+                });   
+            }
+        }
+    })
+
+}
+
 function saveUser(req, res) {
     var user = new User();
 
+    console.log(user);
+
     var params = req.body;
+    var email = params.email;
 
     console.log(params);
 
@@ -28,28 +58,54 @@ function saveUser(req, res) {
     user.image = null;
     user.nick = params.nick;
 
-    if( params.password ) {
-        bcrypt.hash(params.password, null, null, (err, hash) => {
-            user.password = hash;
-            if(user.nombre != null && user.apellido && user.email != null) {
-                user.save( (err, userStores) => {
-                    if(err){
-                        res.status(500).send( { message: 'Error al guardar el usuario' });
-                    } else {
-                        if(!userStores){
-                            res.status(404).send( { message: 'No se registro el usuario' });
-                        }else{
-                            res.status(200).send( { user: userStores });
+    user.clubHincha = '';
+    user.clubJuega = '';
+    user.direccion = '';
+    user.localidad = '';
+    user.posicion = '';
+    user.score = '';
+    user.nacimiento = '';
+    user.pago = false;
+
+    User.findOne({
+        email: email.toLowerCase()
+    }, (err, userOld) => {
+        if( err ) {
+            res.status(500).send( { message: 'Error en la peticion del mail '+email });
+        }else{
+            if(!userOld){
+                
+                if( params.password ) {
+                    bcrypt.hash(params.password, null, null, (err, hash) => {
+                        user.password = hash;
+                        if(user.nombre != null && user.apellido && user.email != null) {
+                            user.save( (err, userStores) => {
+                                if(err){
+                                    res.status(500).send( { message: 'Error al guardar el usuario' });
+                                } else {
+                                    if(!userStores){
+                                        res.status(404).send( { message: 'No se registro el usuario' });
+                                    }else{
+                                        res.status(200).send( { user: userStores });
+                                    }
+                                }
+                            })
+                        } else {
+                            res.status(200).send( { message: 'Introduce todos los campos' })
                         }
-                    }
-                })
-            } else {
-                res.status(200).send( { message: 'Introduce todos los campos' })
+                    })
+                } else {
+                    res.status(500).send( { message: 'Introduce una contraseña' });
+                }
+
+            }else {
+                res.status(404).send( { message: 'Ya existe el usuario' });                  
             }
-        })
-    } else {
-        res.status(500).send( { message: 'Introduce una contraseña' });
-    }
+        }
+    })
+
+
+    
 }
 
 function loginUser(req, res) {
@@ -90,7 +146,10 @@ function updateUser(req, res) {
     var update = req.body;
     var userId = req.params.id;
 
-    User.findByIdAndUpdate(userId, update, (err, userUpdate)=>{
+    console.log("valosres a update");
+    console.log(update);
+
+    User.findByIdAndUpdate(userId, update, {new: true}, (err, userUpdate)=>{
         if(err){
             res.status(500).send( { message: 'Error al actualizar el usuario' });
         }else{
@@ -121,7 +180,7 @@ function uploadImage( req, res) {
         var file_ext = ext_split[1];
 
         if(file_ext == 'png' || file_ext == 'jpg' || file_ext == 'gif'){
-            User.findByIdAndUpdate(userId, { image: file_name}, (err, userUpdate)=>{
+            User.findByIdAndUpdate(userId, { image: file_name}, {new: true}, (err, userUpdate)=>{
                 if(!userUpdate){
                     res.status(404).send( { message: 'No se ha podido actualizar el usuario' });
                 }else{
@@ -157,5 +216,6 @@ module.exports = {
     loginUser,
     updateUser,
     uploadImage,
-    getImageFile
+    getImageFile,
+    getUsers
 }

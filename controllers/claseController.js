@@ -29,26 +29,32 @@ function getClases(req, res) {
 
     if(req.params.page) {
         var page = req.params.page;
+
+        var itemsPerPage = 3;
+
+        Clase.find().sort('nombre').paginate(page, itemsPerPage, (err, clases, total) => {
+            if(err) {
+                res.status(500).send( { message: 'Error en la peticion' });   
+            }else{
+                if(!clases) {
+                    res.status(404).send( { message: 'No hay clases' });
+                }else{
+                    return res.status(200).send( { 
+                        total_items: total,
+                        clases: clases 
+                    });   
+                }
+            }
+        })
     }else{
-        var page = 1;
+        
+        Clase.find().sort('nombre').then(
+            success => res.status(200).send( {clases: success}),
+            err => res.status(500).send( { message: 'Error en la peticion', error: err })
+        )
     }
     
-    var itemsPerPage = 3;
-
-    Clase.find().sort('nombre').paginate(page, itemsPerPage, (err, clases, total) => {
-        if(err) {
-            res.status(500).send( { message: 'Error en la peticion' });   
-        }else{
-            if(!clases) {
-                res.status(404).send( { message: 'No hay clases' });   
-            }else{
-                return res.status(200).send( { 
-                    total_items: total,
-                    clases: clases 
-                });   
-            }
-        }
-    })
+    
 
 }
 
@@ -84,7 +90,7 @@ function updateClase(req, res) {
     var claseId = req.params.id;
     var update = req.body;
 
-    Clase.findByIdAndUpdate(claseId, update, (err, claseUpdated) => {
+    Clase.findByIdAndUpdate(claseId, update, {new: true}, (err, claseUpdated) => {
         if(err){
             res.status(500).send( { message: 'Error al actualizar la clase' });        
         }else{
@@ -130,7 +136,7 @@ function uploadImage( req, res) {
         var file_ext = ext_split[1];
 
         if(file_ext == 'png' || file_ext == 'jpg' || file_ext == 'gif'){
-            Clase.findByIdAndUpdate(claseId, { image: file_name}, (err, claseUpdate)=>{
+            Clase.findByIdAndUpdate(claseId, { image: file_name}, {new: true}, (err, claseUpdate)=>{
                 if(!claseUpdate){
                     res.status(404).send( { message: 'No se ha podido actualizar la clase' });
                 }else{
