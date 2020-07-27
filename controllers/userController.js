@@ -17,27 +17,50 @@ function getUsers(req, res) {
 
     if(req.params.page) {
         var page = req.params.page;
-    }else{
-        var page = 1;
-    }
-    
-    var itemsPerPage = 3;
 
-    User.find().sort('nombre').paginate(page, itemsPerPage, (err, users, total) => {
-        if(err) {
-            res.status(500).send( { message: 'Error en la peticion' });   
-        }else{
-            if(!users) {
-                res.status(404).send( { message: 'No hay usuarios' });   
+        var itemsPerPage = 3;
+
+        User.find().sort('nombre').paginate(page, itemsPerPage, (err, users, total) => {
+            if(err) {
+                res.status(500).send( { message: 'Error en la peticion' });   
             }else{
-                return res.status(200).send( { 
-                    total_items: total,
-                    users: users 
-                });   
+                if(!users) {
+                    res.status(404).send( { message: 'No hay usuarios' });   
+                }else{
+                    return res.status(200).send( { 
+                        total_items: total,
+                        users: users 
+                    });   
+                }
             }
+        })
+    }else{
+        User.find().sort('nombre').then(
+            success => res.status(200).send( {users: success}),
+            err => res.status(500).send( { message: 'Error en la peticion', error: err })
+        )
+    }
+
+}
+
+function getUser(req, res) {
+    
+    
+    var _id = req.params.id;
+
+    User.findOne({
+        _id: _id
+    }, (err, user) => {
+        if( err ) {
+            res.status(500).send( { message: 'Error en la peticion del usuario '+id });
+        }else{
+            if(!user){
+                res.status(404).send( { message: 'No existe el usuario' });
+            }else {
+                res.status(200).send( { user: user });
+            }    
         }
     })
-
 }
 
 function saveUser(req, res) {
@@ -52,20 +75,21 @@ function saveUser(req, res) {
 
     user.nombre = params.nombre;
     user.apellido = params.apellido;
+    user.dni = params.dni;
     user.email = params.email;
-    user.role = 'ROLE_ADMIN';
+    user.role = params.role;
     user.password = params.password;
     user.image = null;
     user.nick = params.nick;
 
-    user.clubHincha = '';
-    user.clubJuega = '';
-    user.direccion = '';
-    user.localidad = '';
-    user.posicion = '';
-    user.score = '';
-    user.nacimiento = '';
-    user.pago = false;
+    user.clubHincha = params.clubHincha;
+    user.clubJuega = params.clubJuega;
+    user.direccion = params.direccion;
+    user.localidad = params.localidad;
+    user.posicion = params.posicion;
+    user.score = params.score;
+    user.nacimiento = params.nacimiento;
+    user.pago = params.pago;
 
     User.findOne({
         email: email.toLowerCase()
@@ -127,6 +151,7 @@ function loginUser(req, res) {
                 bcrypt.compare(password, user.password, (err, check) => {
                     if(check) {
                         if(params.gethash) {
+                            console.log("LOG DEL LOGIN");
                             console.log(user);
                             res.status(200).send( { token: jwt.createToken(user), user: user });
                         }else {
@@ -217,5 +242,6 @@ module.exports = {
     updateUser,
     uploadImage,
     getImageFile,
-    getUsers
+    getUsers,
+    getUser,
 }
