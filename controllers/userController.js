@@ -90,6 +90,7 @@ function saveUser(req, res) {
     user.score = params.score;
     user.nacimiento = params.nacimiento;
     user.pago = params.pago;
+    user.clases = params.clases;
 
     User.findOne({
         email: email.toLowerCase()

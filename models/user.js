@@ -19,7 +19,8 @@ var UserSchema = Schema ({
     score: String,
     nacimiento: String,
     role: String,
-    pago: Boolean
+    pago: Boolean,
+    clases: []
 });
 
 module.exports = mongoose.model('User', UserSchema)
