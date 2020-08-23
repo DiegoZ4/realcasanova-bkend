@@ -9,14 +9,12 @@ var md_auth = require('../middlewares/auntenticate');
 var multipart = require('connect-multiparty');
 var md_upload = multipart({ uploadDir: './uploads/clases' });
 
-var cors = require('cors');
-
-api.get('/clases/:page?', cors(), md_auth.ensureAuth, claseController.getClases);
-api.get('/clase/:id', cors(), md_auth.ensureAuth, claseController.getClase);
-api.post('/clase', cors(), claseController.saveClase);
-api.put('/clase/:id', cors(), md_auth.ensureAuth, claseController.updateClase);
-api.delete('/clase/:id', cors(), md_auth.ensureAuth, claseController.deleteClase);
-api.post('/upload-image-clase/:id', cors(), [md_auth.ensureAuth, md_upload], claseController.uploadImage);
-api.get('/get-image-clase/:imageFile', cors(), claseController.getImageFile);
+api.get('/clases/:page?', md_auth.ensureAuth, claseController.getClases);
+api.get('/clase/:id', md_auth.ensureAuth, claseController.getClase);
+api.post('/clase', claseController.saveClase);
+api.put('/clase/:id', md_auth.ensureAuth, claseController.updateClase);
+api.delete('/clase/:id', md_auth.ensureAuth, claseController.deleteClase);
+api.post('/upload-image-clase/:id', [md_auth.ensureAuth, md_upload], claseController.uploadImage);
+api.get('/get-image-clase/:imageFile', claseController.getImageFile);
 
 module.exports = api;
