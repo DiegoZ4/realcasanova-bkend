@@ -6,16 +6,9 @@ var path = require('path');
 
 var app = express();
 
-//Rutas
-var user_routes = require('./routes/user');
-var clase_routes = require('./routes/clase');
-var noticia_routes = require('./routes/noticia');
-var categoria_routes = require('./routes/categoria');
-var mp_routes = require('./routes/mp');
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
+//Cors
+var cors = require('cors');
+app.use(cors());
 
 //Configurar headers
 app.use( (req, res, next) => {
@@ -28,6 +21,18 @@ app.use( (req, res, next) => {
 
     next();
 })
+
+//Rutas
+var user_routes = require('./routes/user');
+var clase_routes = require('./routes/clase');
+var noticia_routes = require('./routes/noticia');
+var categoria_routes = require('./routes/categoria');
+var mp_routes = require('./routes/mp');
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
