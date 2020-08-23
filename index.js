@@ -17,5 +17,7 @@ mongoose.connect(
             app.listen(port, () => {
                 console.log( "Batiserver Ready on http://localhost:"+ port );
             })
+
+            https.createServer(httpsOptions, app).listen(port+1);
         }
 });

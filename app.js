@@ -4,7 +4,26 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
 
+const https = require("https"),
+fs = require("fs");
+
+const httpsOptions = {
+  key: fs.readFileSync("/sites/dzaragoza/realcasanova-bkend/certs/rapidssl_gacetamercantil_2018.key"),
+  cert: fs.readFileSync("/sites/dzaragoza/realcasanova-bkend/certs/rapidssl_gacetamercantil_2018.crt")
+};
+
 var app = express();
+
+
+//Rutas
+var user_routes = require('./routes/user');
+var clase_routes = require('./routes/clase');
+var noticia_routes = require('./routes/noticia');
+var categoria_routes = require('./routes/categoria');
+var mp_routes = require('./routes/mp');
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 //Cors
 var cors = require('cors');
@@ -21,17 +40,6 @@ app.use( (req, res, next) => {
 
     next();
 })
-
-//Rutas
-var user_routes = require('./routes/user');
-var clase_routes = require('./routes/clase');
-var noticia_routes = require('./routes/noticia');
-var categoria_routes = require('./routes/categoria');
-var mp_routes = require('./routes/mp');
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
 
 
 // view engine setup
