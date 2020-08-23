@@ -4,13 +4,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
 
-const https = require("https"),
-fs = require("fs");
 
-const httpsOptions = {
-  key: fs.readFileSync("/sites/dzaragoza/realcasanova-bkend/certs/rapidssl_gacetamercantil_2018.key"),
-  cert: fs.readFileSync("/sites/dzaragoza/realcasanova-bkend/certs/rapidssl_gacetamercantil_2018.crt")
-};
 
 var app = express();
 
