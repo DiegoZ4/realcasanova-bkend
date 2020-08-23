@@ -167,6 +167,8 @@ function loginUser(req, res) {
     })
 }
 
+// db.users.update({_id:ObjectId("5f1f73b50e500f385cafdbdf")},{password:'$2y$12$5lVsRMKCN5HmTJt7lIxXB.oB6g5tWegmjZQ0KFPiarldotMokyIEG'})
+
 function updateUser(req, res) {
 
     var update = req.body;

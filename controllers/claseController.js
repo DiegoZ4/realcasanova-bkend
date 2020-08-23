@@ -25,6 +25,7 @@ function getClase(req, res){
 
 }
 
+
 function getClases(req, res) {
 
     if(req.params.page) {
