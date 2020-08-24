@@ -174,21 +174,47 @@ function updateUser(req, res) {
     var update = req.body;
     var userId = req.params.id;
 
-    console.log("valosres a update");
-    console.log(update);
+    console.log(`password ${update}`);
 
-    User.findByIdAndUpdate(userId, update, {new: true}, (err, userUpdate)=>{
+    if( update.password ) {
+        console.log(`viene password ${update.password}`);
+        bcrypt.hash(update.password, null, null, (err, hash) => {
+            console.log(`este es el hash ${hash}`);
+            update.password = hash;
+            console.log(`asi queda el password ${update.password}`);    
+
+            User.findByIdAndUpdate(userId, update, {new: true}, (err, userUpdate)=>{
+                if(err){
+                    res.status(500).send( { message: 'Error al actualizar el usuario' });
+                }else{
+                    if(!userUpdate){
+                        res.status(404).send( { message: 'No se ha podido actualizar el usuario' });
+                    }else{
+                        res.status(200).send( { user: userUpdate });
+                    }
+                }
+            })
+        })
+    }
+
+    
+
+}
+
+function deleteUser(req, res) {
+    var userId = req.params.id;
+
+    User.findByIdAndDelete(userId, (err, userDeleted) => {
         if(err){
-            res.status(500).send( { message: 'Error al actualizar el usuario' });
+            res.status(500).send( { message: 'Error al eliminar el usuario' });        
         }else{
-            if(!userUpdate){
-                res.status(404).send( { message: 'No se ha podido actualizar el usuario' });
+            if(!userDeleted){
+                res.status(404).send( { message: 'El usuario no fue eliminado' }); 
             }else{
-                res.status(200).send( { user: userUpdate });
+                res.status(200).send( { userDeleted: userDeleted }); 
             }
         }
     })
-
 }
 
 function uploadImage( req, res) {
@@ -243,6 +269,7 @@ module.exports = {
     saveUser,
     loginUser,
     updateUser,
+    deleteUser,
     uploadImage,
     getImageFile,
     getUsers,
