@@ -4,7 +4,10 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
 
-
+bodyParser = {
+    json: {limit: '50mb', extended: true},
+    urlencoded: {limit: '50mb', extended: true}
+};
 
 var app = express();
 
@@ -18,6 +21,8 @@ var mp_routes = require('./routes/mp');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+
 
 //Cors
 var cors = require('cors');
