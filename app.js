@@ -4,10 +4,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
 
-bodyParser = {
-    json: {limit: '50mb', extended: true},
-    urlencoded: {limit: '50mb', extended: true}
-};
+
 
 var app = express();
 
