@@ -19,8 +19,11 @@ var mp_routes = require('./routes/mp');
 // app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(bodyParser.json());
 
-app.use(bodyParser.json({limit: '100mb', extended: true}))
-app.use(bodyParser.urlencoded({limit: '100mb', extended: true}))
+app.use(bodyParser.json({limit: '100mb', extended: true}));
+app.use(bodyParser.urlencoded({limit: '100mb', extended: true}));
+
+app.use(express.json({limit: '100mb'}));
+app.use(express.urlencoded({limit: '100mb'}));
 
 
 
